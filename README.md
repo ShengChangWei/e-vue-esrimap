@@ -2,7 +2,7 @@
 
 基于 vue-cli3+TypeScript 的二维地图组件，使用的地图 API 是 ArcGIS API for JavaScript v3.x（>=3.14）。
 
-学习借鉴：<a src="https://github.com/laixiangran/e-ngx-esrimap"></a>
+学习借鉴：<https://github.com/laixiangran/e-ngx-esrimap>
 
 ## Usage
 
