@@ -1,7 +1,7 @@
-import EVueTest from './e-vue-test/e-vue-test';
+import EVueEsrimap from './e-vue-esrimap/e-vue-esrimap';
 
 const components = [
-    EVueTest
+    EVueEsrimap
 ];
 
 const install = function (Vue) {
@@ -16,5 +16,5 @@ if (typeof window !== 'undefined' && window.Vue) {
 
 export default {
     install,
-    EVueTest
+    EVueEsrimap
 }

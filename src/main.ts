@@ -1,9 +1,9 @@
 import Vue from 'vue';
 import App from './App.vue';
 import './registerServiceWorker';
-import EVueTest from './../packages/index.js';
+import EVueEsrimap from './../packages/index.js';
 
-Vue.use(EVueTest);
+Vue.use(EVueEsrimap);
 Vue.config.productionTip = false;
 
 

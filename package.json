@@ -1,18 +1,18 @@
 {
-	"name": "e-vue-test",
-	"version": "0.1.5",
-	"description": "基于Vue的测试组件",
-	"main": "lib/e-vue-test.umd.js",
+	"name": "e-vue-esrimap",
+	"version": "0.0.2",
+	"description": "基于 vue 的二维地图组件，使用的地图 API 是 ArcGIS API for JavaScript v3.x（>=3.14）。",
+	"main": "lib/e-vue-test.common.js",
 	"keywords": [
 		"vue",
-		"test",
+		"ArcGIS API for JavaScript",
 		"shengchangwei"
 	],
 	"scripts": {
 		"start": "vue-cli-service serve",
 		"build": "vue-cli-service build",
 		"lint": "vue-cli-service lint",
-		"lib": "vue-cli-service build --target lib --name e-vue-test --dest lib packages/index.js"
+		"lib": "vue-cli-service build --target lib --name e-vue-esrimap --dest lib packages/index.js"
 	},
 	"author": {
 		"name": "圣长伟",
