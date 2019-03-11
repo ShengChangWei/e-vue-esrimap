@@ -15,31 +15,126 @@
 
     ```shell
     import EVueEsrimap from 'e-vue-esrimap/lib/e-vue-esrimap.common.js'
+    import 'font-awesome/css/font-awesome.css';
     Vue.use(EVueEsrimap);
     ``
 3. template
 
-    ```shell
+    ```html
+        <h2>谷歌地图服务</h2>
         <EVueEsrimap
-		:mapType="'tdt'"
-		:mapUrl="['vec','cva']"
-		:submapUrl="[['img','cia'], ['ter','cta']]"
-		:geoUrl="geoUrl"
-		:initExtent="initExtent"
-		:gisApiUrl="gisApiUrl">
+            :mapType="'google'"
+            :mapUrl="'m"
+            :submapUrl="['y', 'p']"
+            :geoUrl="geoUrl"
+            :initExtent="initExtent2"
+            :gisApiUrl="gisApiUrl"
+            v-on:baseLayerChange="onGoogleBaseLayerChange($event)"
+            v-on:mapReady="onGoogleMapReady($event)">
         </EVueEsrimap>
+
+        <h2>天地图地图服务</h2>
+        <EVueEsrimap
+            :mapType="'tdt'"
+            :mapUrl="['vec','cva']"
+            :submapUrl="[['img','cia'], ['ter','cta']]"
+            :geoUrl="geoUrl"
+            :initExtent="initExtent"
+            :gisApiUrl="gisApiUrl"
+            v-on:baseLayerChange="onTdtBaseLayerChange($event)"
+            v-on:mapReady="onTdtMapReady($event)">
+        </EVueEsrimap>
+
+        <h2>ArcGIS地图服务</h2>
+
+        <EVueEsrimap
+            :isProxy="false"
+            :mapUrl="mapUrl"
+            :submapUrl="['http://server.arcgisonline.com/arcgis/rest/services/ESRI_Imagery_World_2D/MapServer']"
+            :geoUrl="geoUrl"
+            :initExtent="initExtent"
+            :gisApiUrl="gisApiUrl"
+            :esriCSSUrl="esriCSSUrl"
+            v-on:baseLayerChange="onEsriBaseLayerChange($event)"
+            v-on:mapReady="onEsriMapReady($event)">
+        </EVueEsrimap>
+
+
     ```
 
 4. js
 
-    ```shell
+    ```javascript
           data() {
             return {
-                initExtent: {xmax: 116.39029888900006, xmin: 116.04209077900009, ymax: 40.161018230000025, ymin: 39.885287565000056},
-                gisApiUrl: 'https://js.arcgis.com/3.23/',
-                geoUrl: 'https://utility.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer'
+                googleMapComponent: '';
+                googleMap: '';
+                tdtMapComponent: '';
+                tdtMap: any;
+                esriMapComponent: '';
+                esriMap: '';
+                mapUrl: 'http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_StreetMap_World_2D/MapServer';
+                geoUrl:  'http://tasks.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer';
+                gisApiUrl: 'http://js.arcgis.com/3.23/';
+                esriCSSUrl: 'http://js.arcgis.com/3.23/esri/css/esri.css';
+                initExtent: {xmax: 116.39029888900006, xmin: 116.04209077900009, ymax: 40.161018230000025, ymin: 39.885287565000056};
+                initExtent2:{xmax: 12980277.986602597, xmin: 12934415.769631553, ymax: 4864627.423165954, ymin: 4841696.314680432};
+
             }
         },
+        methods: {
+            /**
+            * 谷歌地图加载完成
+            * @param $event
+            */
+            onGoogleMapReady($event) {
+                this.googleMapComponent = $event;
+                this.googleMap = this.googleMapComponent.map;
+            }
+
+            /**
+            * 谷歌底图切换
+            * @param {number} $event
+            */
+            onGoogleBaseLayerChange($event) {
+                console.log($event);
+            }
+
+            /**
+            * 天地图地图加载完成
+            * @param $event
+            */
+            onTdtMapReady($event) {
+                this.tdtMapComponent = $event;
+                this.tdtMap = this.tdtMapComponent.map;
+                this.tdtMapComponent.setExtent(this.initExtent);
+            }
+
+            /**
+            * 天地图底图切换
+            * @param {number} $event
+            */
+            onTdtBaseLayerChange($event) {
+                console.log($event);
+            }
+
+            /**
+            * esri地图加载完成
+            * @param $event
+            */
+            onEsriMapReady($event) {
+                this.esriMapComponent = $event;
+                this.esriMap = this.esriMapComponent.map;
+            }
+
+            /**
+            * esri底图切换
+            * @param {number} $event
+            */
+            onEsriBaseLayerChange($event) {
+                console.log($event);
+            }
+        }
     ```
 
 ## API

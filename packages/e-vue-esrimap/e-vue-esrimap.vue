@@ -1,16 +1,26 @@
 <template>
 	<div class="e-vue-map" style="height: 100%;">
 		<div class="eMap" ref="eMap" style="height: 100%;"></div>
+		<div class="eNavigation" v-If="enableNavigation">
+		<div class="zoom-map full-map" title="全图" @click="fullMap()">
+			<i class="fa fa-globe" aria-hidden="true"></i>
+		</div>
+		<div class="zoom-map zoom-in-map" :class="{'zoom-disable': isMax}" title="放大一级" @click="zoomIn()">
+			<i class="fa fa-plus" aria-hidden="true"></i>
+		</div>
+		<div class="zoom-map zoom-out-map" :class="{'zoom-disable': isMin}" title="缩小一级" @click="zoomOut()">
+			<i class="fa fa-minus" aria-hidden="true"></i>
+		</div>
+	</div>
 	</div>
 </template>
 
 <script lang="ts">
-    import { Component, Prop, Vue } from 'vue-property-decorator';
+    import { Component, Prop, Vue, Emit } from 'vue-property-decorator';
     import EVueErimapLoader from './e-vue-esrimap-loader';
 
     @Component({
         name: 'EVueEsrimap',
-        componentName: 'EVueEsrimap'
     })
     export default class EVueEsrimap extends Vue {
         eVueErimapLoader: any;
@@ -20,7 +30,7 @@
             this.eVueErimapLoader = new EVueErimapLoader();
             console.log(this.eVueErimapLoader);
         }
-
+		// 输入参数
         @Prop({default: '大家好'}) testValue: string;
         @Prop({default: 'http://js.arcgis.com/3.23/'}) gisApiUrl: string;
         @Prop({default: 'http://tasks.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer'}) geoUrl: string;
@@ -29,8 +39,20 @@
         @Prop({default: 'esri'}) mapType: string;
         @Prop({default: 'http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_StreetMap_World_2D/MapServer'}) mapUrl: string;
         @Prop({default: ['http://server.arcgisonline.com/arcgis/rest/services/ESRI_Imagery_World_2D/MapServer']}) submapUrl: any[];
-        @Prop() initExtent: any;
-        @Prop({default: 'http://js.arcgis.com/3.23/esri/css/esri.css'}) esriCSSUrl: string;
+        @Prop({default: {xmax: 106.39029888900006, xmin: 116.04209077900009, ymax: 40.161018230000025, ymin: 39.885287565000056}}) initExtent: any;
+		@Prop({default: 'http://js.arcgis.com/3.23/esri/css/esri.css'}) esriCSSUrl: string = 'http://js.arcgis.com/3.23/esri/css/esri.css'
+		@Prop({default: true}) enableNavigation: boolean;
+
+		// 输出参数
+		// 地图初始化事件
+		@Emit('mapReady') mapReady(val?: any) {};
+		// 地图销毁事件
+		@Emit('mapDestroy') mapDestroy(val?: any) {};
+		// 地图范围改变事件
+		@Emit('exentChange') exentChange(val?: any) {};
+		// 地图切换事件
+		@Emit('baseLayerChange') baseLayerChange(val?: any) {};
+
         private timeOutId: number; // 定时器id
         private locationLayer: any; // 定位图层
         private basemapIds: any[] = []; // 所有底图id
@@ -96,8 +118,21 @@
             this.addEsriMapCss()
            this.eVueErimapLoader.load({url: this.gisApiUrl}).then(() => {
               this.init();
-           })
+           }).catch((e:Error)=> {
+			   if(e.message === 'The ArcGIS API for JavaScript is already loaded.') {
+				   this.init();
+			   } else {
+				   console.error(e)
+			   }
+		   })
         }
+
+		destroyed() {
+			if(this.map) {
+				this.map.destroy();
+			}
+			this.mapDestroy();
+		}
 
     /**
 	 * 初始化esri模块
@@ -301,6 +336,26 @@
 					this.map.addLayer(layer);
 				});
 			});
+		}else if (this.mapType === 'baidu') {
+
+			// // 初始底图
+			// this.getBaiduLayer(this.mapUrl).then((layer: any) => {
+			// 	const googleMapLayerId: string = `${this.mapType}_base_0`;
+			// 	this.basemapIds.push(googleMapLayerId);
+			// 	layer.id = googleMapLayerId;
+			// 	this.map.addLayer(layer);
+			// });
+
+			// // 切换的其它底图
+			// this.submapUrl.forEach((submap: any, index: number) => {
+			// 	this.getBaiduLayer(submap).then((layer: any) => {
+			// 		const googleMapLayerId: string = `${this.mapType}_base_${index + 1}`;
+			// 		this.basemapIds.push(googleMapLayerId);
+			// 		layer.id = googleMapLayerId;
+			// 		layer.setVisibility(false);
+			// 		this.map.addLayer(layer);
+			// 	});
+			// });
 		} else if (this.mapType === 'esri') {
 
 			// 初始底图
@@ -379,7 +434,7 @@
 		});
     }
     
-    	/**
+    /**
 	 * 获取谷歌图层
 	 * @param layer 图层的代码
 	 * @returns {Promise<T>}
@@ -431,7 +486,95 @@
 		});
 	}
 
-        	/**
+//     /**
+// 	 * 获取百度图层
+// 	 * @param layer 图层的代码
+// 	 * @returns {Promise<T>}
+// 	 */
+// 	private getBaiduLayer(layer: any): Promise<any> {
+// 			return new Promise((resolve) => {
+// 				const tileInfo: any = new this.TileInfo({
+// 					rows: 256,
+// 					cols: 256,
+// 					compressionQuality: 90,
+// 					origin: {
+//                         x: -20037508.342787,
+//                         y: 20037508.342787
+// 					},
+// 					spatialReference: {
+// 						wkid: 102100
+// 					},
+// 					lods: [
+// 						{ "level": 0, "resolution": 156543.033928, "scale": 591657527.591555 },
+//                         { "level": 1, "resolution": 78271.5169639999, "scale": 295828763.795777 },
+//                         { "level": 2, "resolution": 39135.7584820001, "scale": 147914381.897889 },
+//                         { "level": 3, "resolution": 19567.8792409999, "scale": 73957190.948944 },
+//                         { "level": 4, "resolution": 9783.93962049996, "scale": 36978595.474472 },
+//                         { "level": 5, "resolution": 4891.96981024998, "scale": 18489297.737236 },
+//                         { "level": 6, "resolution": 2445.98490512499, "scale": 9244648.868618 },
+//                         { "level": 7, "resolution": 1222.99245256249, "scale": 4622324.434309 },
+//                         { "level": 8, "resolution": 611.49622628138, "scale": 2311162.217155 },
+//                         { "level": 9, "resolution": 305.748113140558, "scale": 1155581.108577 },
+//                         { "level": 10, "resolution": 152.874056570411, "scale": 577790.554289 },
+//                         { "level": 11, "resolution": 76.4370282850732, "scale": 288895.277144 },
+//                         { "level": 12, "resolution": 38.2185141425366, "scale": 144447.638572 },
+//                         { "level": 13, "resolution": 19.1092570712683, "scale": 72223.819286 },
+//                         { "level": 14, "resolution": 9.55462853563415, "scale": 36111.909643 },
+//                         { "level": 15, "resolution": 4.77731426794937, "scale": 18055.954822 },
+//                         { "level": 16, "resolution": 2.38865713397468, "scale": 9027.977411 },
+//                         { "level": 17, "resolution": 1.19432856685505, "scale": 4513.988705 },
+//                         { "level": 18, "resolution": 0.597164283559817, "scale": 2256.994353 },
+//                         { "level": 19, "resolution": 0.298582141647617, "scale": 1128.497176 }
+//                     ]
+// 				}),
+// 				subDomains: string[] = ['online0', 'online1', 'online2', 'online3', 'online4'],
+// 				templateUrl: string = 'http://${subDomain}.map.bdimg.com/tile/?qt=tile&x=${col}&y=${row}&z=${level}&styles=pl',
+// 				baiduLayer: any = new this.WebTiledLayer(templateUrl, {
+// 					id: 'baidu_' + layer,
+// 					col: 765,
+// 					row: 301,
+// 					subDomains: subDomains,
+// 					tileInfo: tileInfo
+// 				});
+// 			resolve(baiduLayer);
+// 			})
+// 	}
+
+	/**
+	 * 底图切换
+	 * @param {number} layerIndex
+	 */
+	changeBaseLayer(layerIndex: number) {
+		if (this.currBaseLayerIndex !== layerIndex) {
+			this.basemapIds.forEach((mapIds: string | string[], index: number) => {
+				if (layerIndex === index) {
+					const prevBaseLayerIndex = this.currBaseLayerIndex;
+					this.currBaseLayerIndex = layerIndex;
+					if (Array.isArray(mapIds)) {
+						mapIds.forEach((id: string) => {
+							this.map.getLayer(id).setVisibility(true);
+						});
+					} else {
+						this.map.getLayer(mapIds).setVisibility(true);
+					}
+					this.baseLayerChange({
+						prev: prevBaseLayerIndex,
+						curr: this.currBaseLayerIndex
+					});
+				} else {
+					if (Array.isArray(mapIds)) {
+						mapIds.forEach((id: string) => {
+							this.map.getLayer(id).setVisibility(false);
+						});
+					} else {
+						this.map.getLayer(mapIds).setVisibility(false);
+					}
+				}
+			});
+		}
+	}
+
+    /**
 	 * 加载arcgis api for javascript的模块
 	 * @param modules
 	 * @returns {Promise<any>}
@@ -449,17 +592,18 @@
 				this.fit = true;
 				this.setExtent(this.initExtent, this.fit).then(() => {
 					// this.mapReady.emit(this);
+					this.mapReady(this);
 				});
 			} else {
 				this.initExtent = this.map.extent;
-				// this.mapReady.emit(this);
+				this.mapReady(this);
 			}
 		});
 
-		this.map.on('extent-change', (event) => {
+		this.map.on('extent-change', (event: any) => {
 			this.isMax = this.map.getZoom() >= this.map.getMaxZoom();
 			this.isMin = this.map.getZoom() <= this.map.getMinZoom();
-			// this.exentChange.emit(event);
+			this.exentChange(event);
 		});
     }
     	/**
@@ -490,6 +634,32 @@
 		}
 	}
 
+		/**
+	 * 放大
+	 */
+	zoomIn() {
+		this.isMax = this.map.getZoom() >= this.map.getMaxZoom();
+		if (!this.isMax) {
+			this.map.setZoom(this.map.getZoom() + 1);
+		}
+	}
+
+	/**
+	 * 缩小
+	 */
+	zoomOut() {
+		this.isMin = this.map.getZoom() <= this.map.getMinZoom();
+		if (!this.isMin) {
+			this.map.setZoom(this.map.getZoom() - 1);
+		}
+	}
+
+	/**
+	 * 全图
+	 */
+	fullMap() {
+		this.map.setExtent(this.initExtent, this.fit);
+	}
 
 }
 
@@ -504,5 +674,45 @@
 			width: 100%;
 			height: 100%;
 		}
+		.eNavigation {
+        position: absolute;
+        left: 10px;
+        bottom: 10px;
+        width: 33px;
+        height: 120px;
+        font-size: 16px;
+
+        .zoom-map {
+            width: 33px;
+            height: 36px;
+            line-height: 36px;
+            cursor: pointer;
+            text-align: center;
+            color: #757575;
+            background-color: #FFFFFF;
+            box-shadow: 1px 1px 5px 0 #ADAAAA;
+
+            &.zoom-in-map {
+                border-bottom: 1px solid #D9D9D9;
+            }
+
+            &.full-map {
+                margin-bottom: 10px;
+            }
+
+            &:hover {
+                color: #03A9F4;
+            }
+
+            &.zoom-disable {
+                color: #BEBEBE;
+                cursor: auto;
+
+                &:hover {
+                    color: #BEBEBE;
+                }
+            }
+        }
+    }
 	}
 </style>
