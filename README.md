@@ -14,7 +14,7 @@
 2. main.js
 
     ```shell
-    import EVueEsrimap from 'e-vue-esrimap/lib/e-vue-esrimap.common.js'
+    import EVueEsrimap from 'e-vue-esrimap'
     import 'font-awesome/css/font-awesome.css';
     Vue.use(EVueEsrimap);
     ``
@@ -22,19 +22,19 @@
 
     ```html
         <h2>谷歌地图服务</h2>
-        <EVueEsrimap
+        <e-vue-esrimap
             :mapType="'google'"
-            :mapUrl="'m"
+            :mapUrl="'m'"
             :submapUrl="['y', 'p']"
             :geoUrl="geoUrl"
             :initExtent="initExtent2"
             :gisApiUrl="gisApiUrl"
             v-on:baseLayerChange="onGoogleBaseLayerChange($event)"
             v-on:mapReady="onGoogleMapReady($event)">
-        </EVueEsrimap>
+        </e-vue-esrimap>
 
         <h2>天地图地图服务</h2>
-        <EVueEsrimap
+        <e-vue-esrimap
             :mapType="'tdt'"
             :mapUrl="['vec','cva']"
             :submapUrl="[['img','cia'], ['ter','cta']]"
@@ -43,11 +43,11 @@
             :gisApiUrl="gisApiUrl"
             v-on:baseLayerChange="onTdtBaseLayerChange($event)"
             v-on:mapReady="onTdtMapReady($event)">
-        </EVueEsrimap>
+        </e-vue-esrimap>
 
         <h2>ArcGIS地图服务</h2>
 
-        <EVueEsrimap
+        <e-vue-esrimap
             :isProxy="false"
             :mapUrl="mapUrl"
             :submapUrl="['http://server.arcgisonline.com/arcgis/rest/services/ESRI_Imagery_World_2D/MapServer']"
@@ -57,7 +57,7 @@
             :esriCSSUrl="esriCSSUrl"
             v-on:baseLayerChange="onEsriBaseLayerChange($event)"
             v-on:mapReady="onEsriMapReady($event)">
-        </EVueEsrimap>
+        </e-vue-esrimap>
 
 
     ```

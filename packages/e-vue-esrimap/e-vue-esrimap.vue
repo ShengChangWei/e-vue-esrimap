@@ -16,7 +16,7 @@
 </template>
 
 <script lang="ts">
-    import { Component, Prop, Vue, Emit } from 'vue-property-decorator';
+    import { Component, Prop, Vue, Emit, Watch } from 'vue-property-decorator';
     import EVueErimapLoader from './e-vue-esrimap-loader';
 
     @Component({
@@ -28,20 +28,30 @@
         constructor() {
             super();
             this.eVueErimapLoader = new EVueErimapLoader();
-            console.log(this.eVueErimapLoader);
         }
 		// 输入参数
-        @Prop({default: '大家好'}) testValue: string;
-        @Prop({default: 'http://js.arcgis.com/3.23/'}) gisApiUrl: string;
-        @Prop({default: 'http://tasks.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer'}) geoUrl: string;
-        @Prop({default: false}) isProxy: boolean;
-        @Prop({default: 'proxy.jsp'}) proxyUrl: string;
-        @Prop({default: 'esri'}) mapType: string;
-        @Prop({default: 'http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_StreetMap_World_2D/MapServer'}) mapUrl: string;
-        @Prop({default: ['http://server.arcgisonline.com/arcgis/rest/services/ESRI_Imagery_World_2D/MapServer']}) submapUrl: any[];
-        @Prop({default: {xmax: 106.39029888900006, xmin: 116.04209077900009, ymax: 40.161018230000025, ymin: 39.885287565000056}}) initExtent: any;
+        @Prop({default: '大家好'}) testValue!: string;
+        @Prop({default: 'http://js.arcgis.com/3.23/'}) gisApiUrl!: string;
+        @Prop({default: 'http://tasks.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer'}) geoUrl!: string;
+        @Prop({default: false}) isProxy!: boolean;
+        @Prop({default: 'proxy.jsp'}) proxyUrl!: string;
+        @Prop({default: 'esri'}) mapType!: string;
+        @Prop({default: 'http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_StreetMap_World_2D/MapServer'}) mapUrl!: string;
+        @Prop({default: ['http://server.arcgisonline.com/arcgis/rest/services/ESRI_Imagery_World_2D/MapServer']}) submapUrl!: any[];
+        @Prop({default: function () {
+			return {xmax: 106.39029888900006, xmin: 116.04209077900009, ymax: 40.161018230000025, ymin: 39.885287565000056}
+		}}) initExtent: any;
 		@Prop({default: 'http://js.arcgis.com/3.23/esri/css/esri.css'}) esriCSSUrl: string = 'http://js.arcgis.com/3.23/esri/css/esri.css'
-		@Prop({default: true}) enableNavigation: boolean;
+		@Prop({default: true}) enableNavigation!: boolean;
+
+		// public get _initExtent() {
+		// 	return this.initExtent
+		// }
+
+		// @Watch('initExtent',  {deep: true})
+		// handInitExtemt(val: any) {
+		// 	this.initExtent = val;
+		// }
 
 		// 输出参数
 		// 地图初始化事件
@@ -53,7 +63,7 @@
 		// 地图切换事件
 		@Emit('baseLayerChange') baseLayerChange(val?: any) {};
 
-        private timeOutId: number; // 定时器id
+        private timeOutId!: number; // 定时器id
         private locationLayer: any; // 定位图层
         private basemapIds: any[] = []; // 所有底图id
         private currBaseLayerIndex: number = 0; // 当前底图序号

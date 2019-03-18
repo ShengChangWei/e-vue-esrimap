@@ -1,6 +1,6 @@
 {
   "name": "e-vue-esrimap",
-  "version": "1.0.4",
+  "version": "1.0.7",
   "description": "基于 vue-cli3 + TypeScript 的二维地图组件，使用的地图 API 是 ArcGIS API for JavaScript v3.x（>=3.14）。",
   "main": "lib/e-vue-esrimap.common.js",
   "keywords": [
@@ -8,6 +8,11 @@
     "ArcGIS API for JavaScript",
     "shengchangwei"
   ],
+  "homepage": "https://github.com/ShengChangWei/e-vue-esrimap#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ShengChangWei/e-vue-esrimap.git"
+  },
   "scripts": {
     "start": "vue-cli-service serve",
     "build": "vue-cli-service build",
