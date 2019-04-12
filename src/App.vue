@@ -42,11 +42,9 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-    import HelloWorld from './components/HelloWorld.vue';
 
     @Component({
         components: {
-            HelloWorld,
         },
     })
     export default class App extends Vue {
@@ -121,7 +119,7 @@ public onEsriBaseLayerChange($event: number) {
 	html,body {
 		height: 100%;
 		width: 100%;
-		// overflow: hidden;
+		overflow: hidden;
 	}
 	#app {
 		position: absolute;
@@ -131,5 +129,6 @@ public onEsriBaseLayerChange($event: number) {
 		bottom: 0;
 		height: 100%;
 		width: 100%;
+        overflow-x: hidden;
 	}
 </style>
